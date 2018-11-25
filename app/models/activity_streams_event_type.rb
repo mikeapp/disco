@@ -1,0 +1,2 @@
+class ActivityStreamsEventType < ApplicationRecord
+end
