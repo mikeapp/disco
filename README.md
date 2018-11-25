@@ -1,4 +1,4 @@
-# Disco: Change Notification Server
+# Disco: Change Notification Server     ![Build Status](https://travis-ci.org/mikeapp/disco.svg?branch=master)
 
 ## What is this?
 This application is a Ruby on Rails implementation of the [IIIF Change Discovery API](https://iiif.io/api/discovery/0). 
