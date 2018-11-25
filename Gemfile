@@ -59,6 +59,8 @@ group :test do
   gem 'selenium-webdriver'
   # Easy installation and use of chromedriver to run system tests with Chrome
   gem 'chromedriver-helper'
+  # Travis
+  gem 'pg'
 end
 
 group :production do

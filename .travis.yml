@@ -1,3 +1,11 @@
 language: ruby
 rvm:
   - 2.5.3
+addons:
+  postgresql: '10.6'
+services:
+- postgresql
+before_script:
+- psql -c 'create database travis_ci_test;' -U postgres
+- bundle exec rake db:migrate
+- bundle exec rake db:seed
