@@ -9,7 +9,7 @@ class ActivityStreamController < ApplicationController
     pages = (total / PAGE_SIZE).ceil
     collection = {
       '@context': DISC_0_CONTEXT,
-      'id': "#{request.base_url}/activity/new",
+      'id': "#{request.base_url}/activity/all",
       'type': 'OrderedCollection',
       'totalItems': total
     }
