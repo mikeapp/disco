@@ -59,6 +59,8 @@ Rails.application.configure do
   # routes, locales, etc. This feature depends on the listen gem.
   config.file_watcher = ActiveSupport::EventedFileUpdateChecker
 
+  config.active_job.queue_adapter = :resque
+
   # Allows use of REST API if provided
   config.basic_auth_password = ENV['BASIC_AUTH_PASSWORD']
 end

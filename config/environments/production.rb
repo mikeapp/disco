@@ -92,6 +92,7 @@ Rails.application.configure do
   # Do not dump schema after migrations.
   config.active_record.dump_schema_after_migration = false
 
+  config.active_job.queue_adapter = :resque
   Resque.redis = $redis
 
   # Allows use of REST API if provided
