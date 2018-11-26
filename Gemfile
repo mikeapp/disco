@@ -42,6 +42,8 @@ group :development, :test do
   gem 'webmock'
   # Use sqlite3 as the database for Active Record
   gem 'sqlite3'
+  gem 'simplecov', require: false
+  gem 'coveralls', require: false
 end
 
 group :development do
@@ -59,7 +61,6 @@ group :test do
   gem 'selenium-webdriver'
   # Easy installation and use of chromedriver to run system tests with Chrome
   gem 'chromedriver-helper'
-  gem 'simplecov', require: false
 end
 
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem
