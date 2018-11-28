@@ -19,9 +19,9 @@ The application uses ActiveJob and Resque to queue fixity checks;
  resources be mindful of the load placed on others' servers if you increase 
  the number of concurrent workers.
 
-## Loading Manifests
+## Registering Manifests
 
-There are a few ways to load manifests into the application:
+There are a few ways to register manifests with the application:
 - Individually via the `add_resource` Rake task, supplying the `id` and `type` as parameters:
 ```$ruby
   rake disco:add_resource[https://example.org/manifest/1,Manifest]
