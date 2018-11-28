@@ -26,7 +26,7 @@ There are a few ways to load manifests into the application:
 ```$ruby
   rake disco:add_resource[https://example.org/manifest/1,Manifest]
 ```
-- In bulk by POSTing a list or resources to the `/resources` endpoint.  If an `id` value already exists in the database 
+- In bulk by POSTing a list or resources to the `/resource` endpoint.  If an `id` value already exists in the database 
 it will be skipped.  The call will return JSON document that lists the newly created resources.  In order 
 to use this method, an authorization key must be configured 
 (see _Configuring an Authorization Key_ below).
@@ -62,7 +62,7 @@ of the resources by one of the following methods:
   rake disco:check_all_resources
  ```
  
-- Posting data to the `/resources/refresh` endpoint.  This expects a JSON document 
+- Posting data to the `/resource/refresh` endpoint.  This expects a JSON document 
 in the format shown above, although the `type` is optional and 
 ignored for the purposes of a refresh. In order to use this method, an authorization key must be configured
  (see _Configuring an Authorization Key_ below).
