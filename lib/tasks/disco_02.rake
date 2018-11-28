@@ -7,18 +7,18 @@ namespace :disco do
     port = 443
     http = Net::HTTP.new(host, port)
     http.use_ssl = true
-    (56600..100000).each do |i|
+    (1..100000).each do |i|
       path = "/manifest/#{i}"
       id = "https://#{host}#{path}"
+      next if Resource.find_by_object_id(id)
       get = http.get(path)
       next unless get.response.code == '200'
-
       etag = get.response.header['etag']
       json = JSON.parse(get.response.body)
       object_id = json['@id'] || json['id']
       puts "#{object_id} is not #{id}" if object_id != id
       object_type = json['@type'] || json['type']
-      next if Resource.find_by_object_id(id)
+
 
       t = Time.now
       resource = Resource.create(object_id: object_id,
