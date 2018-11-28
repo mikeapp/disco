@@ -73,7 +73,9 @@ ignored for the purposes of a refresh. In order to use this method, an authoriza
 ## Viewing the Activity Stream
 
 The `OrderedCollection` will be published to `/activity/all`, while the `OrderedCollectionPage` instances will be 
-published at `/activity/page/0`, `/activity/page/1`, etc.
+published at `/activity/page/0`, `/activity/page/1`, etc.  Examples:
+- [OrderedCollection](https://discovery-beta.herokuapp.com/activity/all)
+- [OrderedCollectionPage](https://discovery-beta.herokuapp.com/activity/page/0)
 
 ## Configuring an Authorization Key
  
