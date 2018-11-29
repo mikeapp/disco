@@ -19,12 +19,10 @@ namespace :disco do
       puts "#{object_id} is not #{id}" if object_id != id
       object_type = json['@type'] || json['type']
 
-
       t = Time.now
       resource = Resource.create(object_id: object_id,
                           etag: nil,
-                          object_type: object_type,
-                          object_last_update: t)
+                          object_type: object_type)
       CheckForActivityJob.perform_later(resource)
     end
   end
