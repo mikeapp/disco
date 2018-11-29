@@ -13,7 +13,6 @@ namespace :disco do
       next if Resource.find_by_object_id(id)
       get = http.get(path)
       next unless get.response.code == '200'
-      etag = get.response.header['etag']
       json = JSON.parse(get.response.body)
       object_id = json['@id'] || json['id']
       puts "#{object_id} is not #{id}" if object_id != id
@@ -21,7 +20,6 @@ namespace :disco do
 
       t = Time.now
       resource = Resource.create(object_id: object_id,
-                          etag: nil,
                           object_type: object_type)
       CheckForActivityJob.perform_later(resource)
     end
