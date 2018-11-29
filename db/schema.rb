@@ -31,8 +31,9 @@ ActiveRecord::Schema.define(version: 2018_11_14_002059) do
   create_table "resources", force: :cascade do |t|
     t.string "object_id"
     t.string "object_type"
-    t.string "etag"
-    t.datetime "object_last_update"
+    t.string "http_etag"
+    t.datetime "http_last_modified"
+    t.string "fixity_md5"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["object_id"], name: "index_resources_on_object_id", unique: true

@@ -6,8 +6,7 @@ class Resource < ApplicationRecord
   validates :object_type, presence: true
 
   def create_event_if_changed
-    response = request(object_id, true)
-    response = request(object_id) if response.code == '405'
+    response = request(object_id, http_etag, http_last_modified)
     process_response(response)
   end
 
@@ -16,30 +15,30 @@ class Resource < ApplicationRecord
   def process_response(response)
     t = Time.now
     event_type_str = nil
-    exists = !etag.nil?
+    exists = http_etag || fixity_md5
     case response
     when Net::HTTPSuccess then
-      response_etag = response.header['etag']
-      unless response_etag
-        response = request(object_id).response
-        raise "Error requesting body for #{object_id}" unless response.code == '200'
-
-        response_etag = Digest::MD5.hexdigest(response.body)
-      end
-      return if exists and response_etag == etag
-
+      md5 = Digest::MD5.hexdigest(response.body)
+      return if md5 == fixity_md5
+      puts response.to_hash
+      self.http_etag = response.header['etag']
+      res_last_modified = response.header['Last-Modified']
+      self.http_last_modified = Time.rfc2822(res_last_modified) if res_last_modified
+      self.fixity_md5 = md5
       event_type_str = (exists)? 'Update' : 'Create'
-      self.etag = response_etag
     when Net::HTTPGone, Net::HTTPNotFound then
+      return nil if !exists
       event_type_str = 'Delete'
-      self.etag = nil
-      self.object_last_update = Time.now
+      self.http_etag = nil
+      self.http_last_modified = nil
+      self.fixity_md5 = nil
+    when Net::HTTPNotModified
+      logger.debug("#{object_id} Not Modified")
+      return
     else
       logger.info("Received unexpected response code #{response.code} for #{object_id}")
       return
     end
-
-    self.object_last_update = t
     event = create_event(event_type_str)
     save
     event
@@ -60,23 +59,23 @@ class Resource < ApplicationRecord
     event
   end
 
-  def request(object_uri, head = false, depth = 0)
+  def request(object_uri, req_etag, req_last_modified, depth = 0)
     raise 'Too many redirects' if depth > 5
 
-    uri = URI.parse(object_uri)
-    http = Net::HTTP.new(uri.host, uri.port)
-    http.use_ssl = (uri.port == 443)
-    response = if head
-                 http.head(uri.path).response
-               else
-                 http.get(uri.path).response
-               end
+    uri = URI(object_uri)
+    req = Net::HTTP::Get.new(uri)
+    req['Accept'] = '*/*'
+    req['Accept-Encoding'] = 'identity'
+    req['If-Modified-Since'] = req_last_modified if req_last_modified
+    req['If-None-Match'] = req_etag if req_etag
+    response = Net::HTTP.start(uri.hostname, uri.port, :use_ssl => uri.scheme == 'https') {|http|
+      http.request(req)
+    }
     case response
-    when Net::HTTPSuccess then response
-    when Net::HTTPMethodNotAllowed then response
-    when Net::HTTPGone, Net::HTTPNotFound then response
-    when Net::HTTPRedirection then request(response['location'], head, depth + 1)
+    when Net::HTTPMethodNotAllowed, Net::HTTPSuccess, Net::HTTPGone, Net::HTTPNotFound, Net::HTTPNotModified then response
+    when Net::HTTPRedirection then request(response['location'], req_etag, req_last_modified, depth + 1)
     else
+      puts response.body
       response.error!
     end
   end
