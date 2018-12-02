@@ -3,13 +3,12 @@
 class ResourceController < ApplicationController
 
   skip_before_action :verify_authenticity_token
-  before_action :validate_credentials, :validate_items_param
+  before_action :validate_credentials
 
   def create
     result_items = Array.new
-    params['items'].each do |item|
-      raise "#{item} is not a Hash" unless item.is_a?(ActionController::Parameters)
-
+    items = validate_items_param
+    items.each do |item|
       id = item['id']
       type = item['type']
       raise "id and type required" unless id and type
@@ -18,13 +17,12 @@ class ResourceController < ApplicationController
         result_items.push({ 'id': id, 'type': type})
       end
     end
-    render json: { 'items': result_items }
+    render json: result_items
   end
 
   def refresh
-    params['items'].each do |item|
-      raise "#{item} is not a Hash" unless item.is_a?(ActionController::Parameters)
-
+    items = validate_items_param
+    items.each do |item|
       id = item['id']
       raise "id required" unless id
 
@@ -44,8 +42,11 @@ class ResourceController < ApplicationController
   end
 
   def validate_items_param
-    list = params['items']
-    return head 400, 'content-type' => 'text/plain' unless list and list.is_a?(Array)
+    items = JSON.parse(request.body.read.to_s)
+    unless items and items.is_a?(Array)
+      return head 400, 'content-type' => 'text/plain'
+    end
+    items
   end
 
   def basic_auth_allowed?
