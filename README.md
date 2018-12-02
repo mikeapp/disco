@@ -32,8 +32,7 @@ to use this method, an authorization key must be configured
 (see _Configuring an Authorization Key_ below).
  The format of both the input and response is: 
 ```$json
-{
-  "items": [
+[
     {
       "id": "https://example.org/manifest/1",
       "type": "Manifest"
@@ -42,10 +41,8 @@ to use this method, an authorization key must be configured
       "id": "https://example.org/manifest/2",
       "type": "Manifest"
     }
-  ]
-}
+ ]
 ```
-- Directly via SQL
 
 ## Populating the Activity Stream
 
@@ -66,9 +63,15 @@ of the resources by one of the following methods:
 in the format shown above, although the `type` is optional and 
 ignored for the purposes of a refresh. In order to use this method, an authorization key must be configured
  (see _Configuring an Authorization Key_ below).
+ 
+## Fixity Checks
 
-- Directly via SQL.  Note that if you choose to populate all
-  events via SQL, there is no need to load resources into the database, as fixity tracking will not be required.
+When performing an initial check on a resource the application will calculate an 
+MD5 checksum.  It will also record the `Etag` and `Last-Modified` headers, if 
+received from the server.  For subsequent checks the application will perform a 
+conditional GET, if either the `ETag` or `Last-Modified` values were supplied. 
+If the GET returns the resource, the application will calculate the MD5 and 
+peformed a comparison with the stored checksum value. 
   
 ## Viewing the Activity Stream
 
