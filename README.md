@@ -1,5 +1,4 @@
 ![Build Status](https://travis-ci.org/mikeapp/disco.svg?branch=master)
-[![Coverage Status](https://coveralls.io/repos/github/mikeapp/disco/badge.svg?branch=master)](https://coveralls.io/github/mikeapp/disco?branch=master)
 # Disco: Change Notification Server     
 
 ## What is this?
