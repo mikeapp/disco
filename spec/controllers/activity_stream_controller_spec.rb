@@ -18,6 +18,15 @@ RSpec.describe ActivityStreamController, type: :controller do
       expect(json['last']).to be_nil
     end
 
+    it 'stream has the correct base url' do
+      base_url = "https://as.example.com"
+      allow(ENV).to receive(:[]).with("AS_BASE_URL").and_return(base_url)
+      get :collection
+      expect(response.status).to eq(200)
+      json = JSON.parse(response.body)
+      expect(json['id']).to start_with(base_url)
+    end
+
     it 'full collection has correct page counts' do
       event_type = ActivityStreamsEventType.find_by_event_type('Create')
       (0...3001).each {|i|
@@ -56,6 +65,8 @@ RSpec.describe ActivityStreamController, type: :controller do
                                     event_type: event_type,
                                     end_time: Time.now)
       }
+      base_url = "https://as.example.com"
+      allow(ENV).to receive(:[]).with("AS_BASE_URL").and_return(base_url)
 
       get :page, params: {page_number: 1}
       expect(response.status).to eq(200)
@@ -63,14 +74,17 @@ RSpec.describe ActivityStreamController, type: :controller do
       expect(json).to_not be_nil
       expect(json['@context']).to_not be_nil
       expect(json['id']).to include('/activity/page/1')
+      expect(json['id']).to start_with(base_url)
       expect(json['type']).to eq('OrderedCollectionPage')
       expect(json['startIndex']).to be_an(Integer)
       expect(json['startIndex']).to eq(1000)
       expect(json['prev']).to_not be_nil
       expect(json['prev']['id']).to include("/activity/page/0")
+      expect(json['prev']['id']).to start_with(base_url)
       expect(json['prev']['type']).to eq('OrderedCollectionPage')
       expect(json['next']).to_not be_nil
       expect(json['next']['id']).to include("/activity/page/2")
+      expect(json['next']['id']).to start_with(base_url)
       expect(json['next']['type']).to eq('OrderedCollectionPage')
       expect(json['partOf']).not_to be_nil
       expect(json['partOf']['id']).not_to be_nil
